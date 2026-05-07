@@ -1,0 +1,32 @@
+name: Compile LaTeX Reports
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Install TeX Live
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y texlive-latex-base texlive-latex-extra texlive-luatex texlive-fonts-recommended texlive-fonts-extra texlive-pictures fonts-freefont-otf
+
+    - name: Compile reports
+      run: python3 compile_reports.py
+
+    - name: Compile main.tex
+      run: lualatex main.tex
+
+    - name: Upload main.pdf artifact
+      uses: actions/upload-artifact@v7
+      with:
+        name: main-report-pdf
+        path: main.pdf
+        if-no-files-found: error
